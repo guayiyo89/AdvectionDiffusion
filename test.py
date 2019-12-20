@@ -14,4 +14,6 @@ for i in range(n):
 dime = type(-1.0)
 
 arrayt = [2,3,4,5,6,2,3,10]
-print(sum(arrayt))
+arrayt = np.array(arrayt) * pow(10,-7)
+print(arrayt)
+

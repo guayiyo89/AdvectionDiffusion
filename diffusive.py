@@ -1,6 +1,7 @@
 import math
 import random as rd
 
+
 # Boltzmann
 kB = 1.38064 * pow(10, -23)
 # Presion (Pa)
@@ -17,6 +18,7 @@ nu40 = 1.91 * pow(10,-5)
 # Diametro moleculas de aire
 dm = 4 * pow(10,-10)
 
+#VISCOSIDAD AIRE (cP (Pa s2))
 def visc_din(temp):
     if temp <= 0.0:
         val1 = -10; val2 = 0.0
@@ -40,11 +42,11 @@ def visc_din(temp):
 
 
 def coeffdif(temp, diam, lamb, nu):
-    temp = temp + 273.15
     diam = diam * pow(10,-6) # recibo el diametro
     value = -1.10 * diam / lamb
     aux = 1 + 2 * lamb / diam * (1.257 + 0.4 * math.exp(value))
     nu = visc_din(temp)
+    temp = temp + 273.15
     diff = (2 * kB * temp) / (3 * math.pi * nu * diam / 2)
     return diff
 
@@ -52,3 +54,62 @@ def freepath(temp):
     temp = temp + 273.15
     lamb = (kB * temp) / (math.sqrt(2) * math.pi * pow(dm,2) * P)
     return lamb
+
+def cunningham(diam,temp):
+    temp = temp + 273.15
+    lamb = freepath(temp)
+    value = -1.10 * diam / lamb
+    cCoef = 1 + 2 * lamb / diam * (1.257 + 0.4 * math.exp(value))
+    return cCoef
+
+#CONVERTIR VIENTO A METRO POR SEGUNDO Y DE SALIDA RECONVERTIR
+def vdep(temp, diam, uC, viento):
+    diam = diam * pow(10,-6) # recibo el diametro
+    cCoef = cunningham(diam,temp)
+    viento = viento / 1000
+    g = 9.81 #aceleracion m/s2
+    # time particle relax
+    tau = uC * cCoef * pow(diam,2) / (18 * visc_din(temp))
+    # von Karmann Constant
+    k = 0.4
+    # Drag Coeff
+    Cd = 1.3 * pow(10,-3)
+    Vc1 = 1/(1-k) * Cd * viento
+
+    #alpha (m3)
+    ap = 100
+    # Schmidt Number
+    Sc = visc_din(temp)/diam
+
+    viento = viento * 0.27778
+
+    # Stoke number (dn = 1)
+    St = tau * viento
+
+    Vd1 = -ap * 0.1 + (1/k) * cCoef * viento * math.sqrt(Sc) + St/1000
+    Vg = tau * g
+
+    VC = Vc1 + Vg
+    VD = Vd1 + Vg
+
+    Vdep = 1/VC + 1/VD + (Vg / (VC * VD))
+    Vdep = 1/Vdep
+    return Vdep
+
+
+def pond(temp):
+    if temp <= 0:
+        value = 0.02
+    if temp > 0 and temp <= 5:
+        value = 0.00875
+    if temp > 5 and temp <= 10:
+        value = 0.006
+    if temp > 10 and temp <= 15:
+        value = 0.00333
+    if temp > 15 and temp <= 20:
+        value = 0.00125
+    if temp > 20 and temp <= 25:
+        value = 0.00075
+    if temp > 25:
+        value = 0.0005
+    return value
