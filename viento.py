@@ -1,9 +1,15 @@
 import math
 
+def valvorviento(vel):
+    #recibo la velc del viento en m/s -> lo convierto a m/h
+    velc = vel * 3600
+    return vel
+
 def calc_Vx(velc,dirv):
     # El dato de direccion recibido es de donde vino el viento.
-    # Utilizaremos hacia donde se dirige.
-    angulo = dirv + 180
+
+    velc = valvorviento(velc)
+    angulo = dirv
 
     if angulo >= 360:
         angulo = angulo - 360
@@ -16,8 +22,8 @@ def calc_Vx(velc,dirv):
 
 def calc_Vy(velc,dirv):
     # El dato de direccion recibido es de donde vino el viento.
-    # Utilizaremos hacia donde se dirige.
-    angulo = dirv + 180
+    velc = valvorviento(velc)
+    angulo = dirv
 
     if angulo >= 360:
         angulo = angulo - 360

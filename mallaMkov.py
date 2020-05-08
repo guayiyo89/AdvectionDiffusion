@@ -227,7 +227,6 @@ for fh in mesh.faces():
         index = index + 1
 
 ####################################################################################################
-
 ####################################################################################################
 ## PARAMETROS
 ####################################################################################################
@@ -236,11 +235,23 @@ for fh in mesh.faces():
 aU_vtc_PM10 = np.zeros((19,26))
 aU_vtc_PM25 = np.zeros((19,26))
 
+# VIENTO (m/h) (corrdenadas x e y) (HACER FUNCION QUE DESCOMPONGA ESTE VALOR)
+velc = 4500
+dirviento = 230.0
+
+# Precipitaciones inicial
+nLluvia = 0.98
+
+# Temperatura Inicial (Promedio)
+nTemp = 11.0
+
+# Arreglo de tiempo
+aTime = np.linspace(0,768,768)
+
 # valores iniciales de concentracion (por ahora un numero random)
-# aUPM25_cell = np.array(random.sample(range(12,100), 26)) * pow(10,-9)
-# aUPM10_cell = np.array(random.sample(range(30,120), 26)) * pow(10,-9)
-aUPM25_cell = np.zeros(26)
-aUPM10_cell = np.zeros(26)
+aUPM25_cell = np.array(random.sample(range(12,100), 26)) * pow(10,-9)
+aUPM10_cell = np.array(random.sample(range(30,120), 26)) * pow(10,-9)
+
 # valores obtenido de las medianas de los datos de PM (para establecer condicion de emision)
 aUPM25_med = np.array(random.sample(range(12,55), 26)) * pow(10,-9)
 aUPM10_med = np.array(random.sample(range(25,70), 26)) * pow(10,-9)
@@ -251,127 +262,20 @@ aUPM10_timecell = aUPM10_cell
 aUPM10_timevertex = []
 # PM 2.5
 aUPM25_timecell = aUPM25_cell
+print(aUPM25_timecell)
 aUPM25_timevertex = []
 
 # arreglo de temperaturas
-aTemp = []
+aTemp = [nTemp]
 # arreglo de velc viento
-aVviento = []
+aVviento = [velc]
 # arreglo de dir viento
 aDviento = []
 # arreglo de lluvia
 aLluvia = []
 
-# emision residencial
-srcRes_10 = [3.50, 7.00, 27.98, 2.92, 2.92, 0, 0, 40.58, 13.35, 15.59, 40.71, 15.51, 41.37, 20.56, 13.40, 4.58, 0, 1.93, 4.58, 0, 0, 0, 0, 3.86, 14.62, 1.62]
-srcRes_25 = [3.26, 6.51, 26.05, 2.72, 2.72, 0, 0, 37.79, 12.43, 14.51, 38.11, 14.65, 38.50, 19.14, 12.48, 4.26, 0, 1.80, 4.26, 0, 0, 0, 0, 3.59, 13.61, 1.51]
-
-# carga de emision por Fuentes Moviles en ruta (kg/h)
-fMov_10 = [0.11, 0.40, 0.57, 0.40, 0.40, 0.23, 0.06, 0.80, 0.68, 0.80, 1.71, 1.26, 0.80, 0.80, 0.34, 0, 0, 0, 0, 0, 0.06, 0.06, 0.06, 0.11, 0.80, 0.11]
-fMov_25 = [0.10, 0.34, 0.48, 0.34, 0.34, 0.19, 0.05, 0.67, 0.57, 0.67, 1.44, 1.05, 0.67, 0.67, 0,29, 0, 0, 0, 0, 0, 0.05, 0.05, 0.05, 0.10, 0.67, 0.10]
-
-# carga de emision por Polvo Suspendido en ruta (kg/h)
-pSusp_10 = [1.26, 4.42, 6.31, 4.42, 4.42, 2.53, 0.71, 8.84, 7.58, 8.84, 18.94, 13.89, 8.84, 8.84, 3.79, 0, 0, 0, 0, 0, 0, 0, 0, 1.42, 9.92, 1.42]
-pSusp_25 = [0.18, 0.64, 0.91, 0.64, 0.64, 0.36, 0.10, 1.27, 1.09, 1.27, 2.72, 2.00, 1.27, 1.27, 0,54, 0, 0, 0, 0, 0, 0, 0, 0, 0.20, 1.41, 0.20]
-
-
-####################################################################################################
-## CARGA DE DATOS EN PANDA
-####################################################################################################
-
-# LLUVIA
-data = pd.read_csv("ambientales_var\lluvia_inv_19.csv", sep = ";", encoding = "ISO=8859-1", decimal = ",")
-result = data.values.tolist()
-datanew = np.asarray(result)
-
-for a in result:
-    c = -1 # No hay lluvia negativa
-    if pd.notna(a[2]):
-        c = a[2]
-
-    b = c
-    aLluvia.append(b)
-
-m = np.size(aLluvia)
-
-# TEMPERATURA
-data = pd.read_csv("ambientales_var\Temp_inv_19.csv", sep = ";", encoding = "ISO=8859-1", decimal = ",")
-result = data.values.tolist()
-datanew = np.asarray(result)
-
-for a in result:
-    c = -276 # Temperatura imposible de llegar
-    if pd.notna(a[2]):
-        c = a[2]
-
-    b = c
-    aTemp.append(b)
-
-m = np.size(aTemp)
-
-# VELC VIENTO
-data = pd.read_csv("ambientales_var\Viento_inv_19.csv", sep = ";", encoding = "ISO=8859-1", decimal = ",")
-result = data.values.tolist()
-datanew = np.asarray(result)
-
-for a in result:
-    c = -1 # No hay velc negativa
-    if pd.notna(a[2]):
-        c = a[2]
-
-    b = c
-    aVviento.append(b)
-
-m = np.size(aVviento)
-
-#  DIR VIENTO
-data = pd.read_csv("ambientales_var\Vientod_inv_19.csv", sep = ";", encoding = "ISO=8859-1", decimal = ",")
-result = data.values.tolist()
-datanew = np.asarray(result)
-
-for a in result:
-    c = -1 # No hay direccion negativa
-    if pd.notna(a[2]):
-        c = a[2]
-
-    b = c
-    aDviento.append(b)
-
-largos = [np.size(aLluvia),np.size(aTemp),np.size(aVviento),np.size(aDviento)]
-minLargo = min(largos)
-
-
-####################################################################################################
-# MANIPULACION DE DATOS
-
-# defino nuevos arreglos
-temperatura = []
-lluvia = []
-vientoVel = []
-vientoDir = []
-
-for i in range(1, minLargo):
-    if aTemp[i] == -276 or aDviento[i] == -1 or aVviento[i] == -1 or aLluvia[i] == -1:
-        print('AQUINANDA')
-    else:
-        temperatura.append(aTemp[i])
-        lluvia.append(aLluvia[i])
-        vientoVel.append(aVviento[i])
-        vientoDir.append(aDviento[i])
-
-largos = [np.size(temperatura),np.size(lluvia),np.size(vientoVel),np.size(vientoDir)]        
-
-# Ahora defino el arreglo de tiempo
-# tamanp de vector de tiempo
-sizeT = np.size(temperatura) - 1
-# Arreglo de tiempo
-aTime = np.linspace(0,sizeT,np.size(temperatura))
-aTime = aTime.astype(np.int64)
-print(aTime)
 dt = 1 / len(aTime)
 
-
-####################################################################################################
 
 ####################################################################################################
 ####################################################################################################
@@ -379,18 +283,12 @@ dt = 1 / len(aTime)
 ####################################################################################################
 
 
-for t in aTime:
-
+for time in aTime:
     # Calculamos las componentes del viento
-    V_x = viento.calc_Vx(vientoVel[t], vientoDir[t])
-    V_y = viento.calc_Vy(vientoVel[t], vientoDir[t])
+    V_x = viento.calc_Vx(velc, dirviento)
+    V_y = viento.calc_Vy(velc, dirviento)
 
     # CALCULAR COEF DE DIFUSION
-
-    #obtengo la lluvia
-    nLluvia = lluvia[t]
-    # obtengo la temp
-    nTemp = temperatura[t] 
     # viscosidad del aire
     Nu = difs.visc_din(nTemp)
     # distancia de colision del aire
@@ -523,29 +421,43 @@ for t in aTime:
         value_adv10 = sum(aPM10_adv)
         value_adv25 = sum(aPM25_adv)
 
-
-        # Velocidad de Deposicion
-        vW25 = 2 * pow(10,4) * nLluvia * pow(10,-3)
-        vW10 = 4 * pow(10,4) * nLluvia * pow(10,-3)
-
-        area = aArea[nCell]
+        # Deposicion Seca (vels en m/s lelvarlo a m/h)
+        dseca25 = difs.vdep(nTemp,2.5,aUPM25_cell[nCell],velc) * aUPM25_cell[nCell] * 900
+        dseca10 = difs.vdep(nTemp,10,aUPM10_cell[nCell],velc) * aUPM10_cell[nCell] * 900
 
         # Emision
-        src_PM10 = (srcRes_10[nCell] + fMov_10[nCell] + pSusp_10[nCell])/(area * 400)
-        src_PM25 = (srcRes_25[nCell] + fMov_25[nCell] + pSusp_25[nCell])/(area * 400)
+        cfSrc = difs.pond(nTemp) * 1.1
 
-        aUPM10_cell[nCell] = PM10 + dt * (value_diff10 - value_adv10) / area - dt * (vW10 * aUPM10_cell[nCell]/4) + src_PM10
-        aUPM25_cell[nCell] = PM25 + dt * (value_diff25 - value_adv25) / area - dt * (vW25 * aUPM25_cell[nCell]/4) + src_PM25
+        aUPM10_cell[nCell] = PM10 + dt * (value_diff10 - value_adv10) / aArea[nCell] - dt * (nLluvia * pow(10,-3) * aUPM10_cell[nCell]/4 + dseca10) + cfSrc * aUPM10_med[nCell]
+        aUPM25_cell[nCell] = PM25 + dt * (value_diff25 - value_adv25) / aArea[nCell] - dt * (nLluvia * pow(10,-3) * aUPM25_cell[nCell]/4 + dseca25) + cfSrc * aUPM25_med[nCell]
         # FIN FLUJO EN TODAS LAS CARAS
     # print('HOLAAA', aUPM10_cell)
     b = aUPM10_cell
     aUPM10_timecell = np.vstack((aUPM10_timecell,aUPM10_cell))
     aUPM25_timecell = np.vstack((aUPM25_timecell,aUPM25_cell))
 
+    # Actualizo valores de Temperatura, Velocidad y Dir Viento
+    nTemp = markov.temperatura(nTemp)
+
+    velc = markov.valor_velc(velc/1000)
+    # lo recnvierto a escala el viento
+    velc = velc * 1000
+
+    dirviento = markovdir.direction(dirviento)
+    nLluvia = markovdir.ppm(nLluvia)
+
+    # guardo valores
+    aTemp.append(nTemp)
+    aVviento.append(velc)
+    aDviento.append(dirviento)
+    aLluvia.append(nLluvia)
+
 
 #print('Viento',aVviento)
 
 ##### CONVERIR TOdO A M2!!!
+
+print(dseca25)
 
 dfPM25 = pd.DataFrame(aUPM25_timecell)
 dfPM10 = pd.DataFrame(aUPM10_timecell)
@@ -553,7 +465,10 @@ temperatura = pd.DataFrame(aTemp)
 dfViento = pd.DataFrame(aVviento)
 dfLluvia = pd.DataFrame(aLluvia)
 
-export = dfPM25.to_csv(r'PM25_data.csv', index = None, header=True)
-export = dfPM10.to_csv(r'PM10_data.csv', index = None, header=True)
+print('PM 25', dfPM25)
 
-print(aNormal_xf)
+export = dfPM25.to_csv(r'PM25_test.csv', index = None, header=True)
+export = dfPM10.to_csv(r'PM10_test.csv', index = None, header=True)
+export = temperatura.to_csv(r'temperatura_test.csv', index = None, header=True)
+export = dfLluvia.to_csv(r'lluvia_test.csv', index = None, header=True)
+export = dfViento.to_csv(r'viento_test.csv', index = None, header=True)

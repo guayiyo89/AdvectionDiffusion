@@ -17,3 +17,5 @@ arrayt = [2,3,4,5,6,2,3,10]
 arrayt = np.array(arrayt) * pow(10,-7)
 print(arrayt)
 
+fMovil_10 = [11.06, 2,3,4]
+print(fMovil_10)
