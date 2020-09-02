@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mapa</title>
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="fileUpload" />
+    <input type="button" id="upload" value="Upload"  onclick="Upload()" />
+    <hr />
+    <div id="map"></div>
+    <script>
+        function Upload() {
+            var fileUpload = document.getElementById("fileUpload");
+            var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+            if (regex.test(fileUpload.value.toLowerCase())) {
+                var datacsv = []
+                if (typeof (FileReader) != "undefined") {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var table = document.createElement("table");
+                        // calculamos el largo del CSV
+                        var rows = e.target.result.split("\n");
+                        // recorre todas las lineas del CSV y separa por coma
+                        for (var i = 0; i < rows.length; i++) {
+                            var cells = rows[i].split(",");
+                            console.log(rows.length)
+    
+                            if (cells.length > 1) {
+                                var row = table.insertRow(-1);
+                                for (var j = 0; j < cells.length; j++) {
+                                    var cell = row.insertCell(-1);
+                                    cell.innerHTML = cells[j];
+                                }
+                            }
+                            datacsv[i] = cells
+                        }
+                        
+                        console.log(datacsv);
+                        
+
+                        pm25 = datacsv[76]
+                        b = [];
+                        for(a of pm25){
+                          a = Number(a)*Math.pow(10,9);
+                          b.push(a);
+                          console.log("A",a);
+                        }
+                        initMap(b);   // Pasa valores al mapa
+
+                        console.log("PM25:::::",b);
+                    
+                    }
+                    reader.readAsText(fileUpload.files[0]);
+                } else {
+                    alert("This browser does not support HTML5.");
+                }
+            } else {
+                alert("Please upload a valid CSV file.");
+            }
+            console.log("VALORES:::",  this.valores);
+
+            return pm25;
+        }
+
+
+        console.log("VALORES:::",  this.valores);
+        // This example creates a simple polygon representing the Bermuda Triangle.
+        // When the user clicks on the polygon an info window opens, showing
+        // information about the polygon's coordinates.
+  
+        var map;
+        var infoWindow;
+  
+        function initMap(vals) {   // Inicia Mapa
+
+          //Data PM 2.5
+        var pm25 =vals; // [23,56,65,122,8,23,56,65,12,212,23,16,60,22,37,23,56,65,22,12,23,56,65,22,12,44]
+        //var pm25 = Upload()
+        console.log("PM25Valores:::::",pm25);
+        
+        var colorCell = []
+
+        function colores(valorpm){
+          if (valorpm < 10){
+            color = '#0f8565'
+          }
+          if (valorpm >= 10 && valorpm < 25){
+            color = '#15ad48'
+          }
+          if (valorpm >= 25 && valorpm < 50){
+            color = '#43a11b'
+          }
+          if (valorpm >= 50 && valorpm < 75){
+            color = '#e9f505'
+          }
+          if (valorpm >= 75 && valorpm < 125){
+            color = '#e36600'
+          }
+          if (valorpm > 125){
+            color = '#b50d07'
+          }
+          return color;
+        }
+
+        for (i = 0; i < pm25.length; i++){
+          colorCell[i] = colores(pm25[i])
+        }
+
+
+          map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            center: {lat: -38.738040, lng: -72.603753},
+            mapTypeId: 'terrain'
+          });
+  
+          // Define the LatLng coordinates for the polygon.
+          var triangleCoords1 = [
+              {lat: -38.684, lng: -72.6805},
+              {lat: -38.684, lng: -72.6216},
+              {lat: -38.705, lng: -72.645}
+          ];
+
+          var triangleCoords2 = [
+              {lat: -38.684, lng: -72.6805},
+              {lat: -38.719, lng: -72.6805},
+              {lat: -38.705, lng: -72.645}
+          ];
+
+          var triangleCoords3 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.719, lng: -72.6805},
+              {lat: -38.705, lng: -72.645}
+          ];
+
+          var triangleCoords4 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.719, lng: -72.6805},
+              {lat: -38.7421, lng: -72.6805}
+          ];
+
+          var triangleCoords5 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.7607, lng: -72.6482},
+              {lat: -38.7421, lng: -72.6805}
+          ];
+
+          var triangleCoords6 = [
+              {lat: -38.7862, lng: -72.6805},
+              {lat: -38.7607, lng: -72.6482},
+              {lat: -38.7421, lng: -72.6805}
+          ];
+
+          var triangleCoords7 = [
+              {lat: -38.7862, lng: -72.6805},
+              {lat: -38.7607, lng: -72.6482},
+              {lat: -38.7862, lng: -72.6013}
+          ];
+
+          var triangleCoords8 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.7607, lng: -72.6482},
+              {lat: -38.7599, lng: -72.6117}
+          ];
+
+          var triangleCoords9 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.705, lng: -72.645},
+              {lat: -38.7091, lng: -72.6066}
+          ];
+
+          var triangleCoords10 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.7294, lng: -72.5833},
+              {lat: -38.7091, lng: -72.6066}
+          ];
+
+          var triangleCoords11 = [
+              {lat: -38.7351, lng: -72.6277},
+              {lat: -38.7294, lng: -72.5833},
+              {lat: -38.7599, lng: -72.6117}
+          ];
+
+          var triangleCoords12 = [
+              {lat: -38.7555, lng: -72.5621},
+              {lat: -38.7294, lng: -72.5833},
+              {lat: -38.7599, lng: -72.6117}
+          ];
+
+          var triangleCoords13 = [
+              {lat: -38.7555, lng: -72.5621},
+              {lat: -38.7294, lng: -72.5833},
+              {lat: -38.7241, lng: -72.5429}
+          ];
+
+          var triangleCoords14 = [
+              {lat: -38.7078, lng: -72.5568},
+              {lat: -38.7294, lng: -72.5833},
+              {lat: -38.7241, lng: -72.5429}
+          ];
+
+          var triangleCoords15 = [
+              {lat: -38.7078, lng: -72.5568},
+              {lat: -38.684, lng: -72.5193},
+              {lat: -38.7241, lng: -72.5429}
+          ];
+
+          var triangleCoords16 = [
+              {lat: -38.7078, lng: -72.5568},
+              {lat: -38.7294, lng: -72.5833},
+              {lat: -38.7091, lng: -72.6066}
+          ];
+
+          var triangleCoords17 = [
+              {lat: -38.684, lng: -72.6216},
+              {lat: -38.705, lng: -72.645},
+              {lat: -38.7091, lng: -72.6066}
+          ];
+
+          var triangleCoords18 = [
+              {lat: -38.684, lng: -72.6216},
+              {lat: -38.684, lng: -72.5691},
+              {lat: -38.7091, lng: -72.6066}
+          ];
+
+          var triangleCoords19 = [
+              {lat: -38.7078, lng: -72.5568},
+              {lat: -38.684, lng: -72.5691},
+              {lat: -38.7091, lng: -72.6066}
+          ];
+
+          var triangleCoords20 = [
+              {lat: -38.7078, lng: -72.5568},
+              {lat: -38.684, lng: -72.5691},
+              {lat: -38.684, lng: -72.5193}
+          ];
+
+          var triangleCoords21 = [
+              {lat: -38.7435, lng: -72.5193},
+              {lat: -38.684, lng: -72.5193},
+              {lat: -38.7241, lng: -72.5429}
+          ];
+
+          var triangleCoords22 = [
+              {lat: -38.7435, lng: -72.5193},
+              {lat: -38.7555, lng: -72.5621},
+              {lat: -38.7241, lng: -72.5429}
+          ];
+
+          var triangleCoords23 = [
+              {lat: -38.7435, lng: -72.5193},
+              {lat: -38.7555, lng: -72.5621},
+              {lat: -38.7862, lng: -72.5193}
+          ];
+
+          var triangleCoords24 = [
+              {lat: -38.7862, lng: -72.6013},
+              {lat: -38.7607, lng: -72.6482},
+              {lat: -38.7599, lng: -72.6117}
+          ];
+
+          var triangleCoords25 = [
+              {lat: -38.7862, lng: -72.6013},
+              {lat: -38.7555, lng: -72.5621},
+              {lat: -38.7599, lng: -72.6117}
+          ];
+
+          var triangleCoords26 = [
+              {lat: -38.7862, lng: -72.6013},
+              {lat: -38.7555, lng: -72.5621},
+              {lat: -38.7862, lng: -72.5193}
+          ];
+
+          console.log(colorCell)
+
+          var rojo = '#FF0000'
+          
+          //#########################################################################//
+          // Construct the polygon.
+          //#########################################################################//
+
+          var cell1 = new google.maps.Polygon({
+            paths: triangleCoords1,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[0],
+            fillOpacity: 0.35
+          });
+
+          var cell2 = new google.maps.Polygon({
+            paths: triangleCoords2,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[1],
+            fillOpacity: 0.35
+          });
+
+          var cell3 = new google.maps.Polygon({
+            paths: triangleCoords3,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[2],
+            fillOpacity: 0.35
+          });
+
+          var cell4 = new google.maps.Polygon({
+            paths: triangleCoords4,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[3],
+            fillOpacity: 0.35
+          });
+
+          var cell5 = new google.maps.Polygon({
+            paths: triangleCoords5,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[4],
+            fillOpacity: 0.35
+          });
+
+          var cell6 = new google.maps.Polygon({
+            paths: triangleCoords6,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[5],
+            fillOpacity: 0.35
+          });
+
+          var cell7 = new google.maps.Polygon({
+            paths: triangleCoords7,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[6],
+            fillOpacity: 0.35
+          });
+
+          var cell8 = new google.maps.Polygon({
+            paths: triangleCoords8,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[7],
+            fillOpacity: 0.35
+          });
+
+          var cell9 = new google.maps.Polygon({
+            paths: triangleCoords9,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[8],
+            fillOpacity: 0.35
+          });
+
+          var cell10 = new google.maps.Polygon({
+            paths: triangleCoords10,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[9],
+            fillOpacity: 0.35
+          });
+
+          var cell11 = new google.maps.Polygon({
+            paths: triangleCoords11,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[10],
+            fillOpacity: 0.35
+          });
+
+          var cell12 = new google.maps.Polygon({
+            paths: triangleCoords12,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[11],
+            fillOpacity: 0.35
+          });
+
+          var cell13 = new google.maps.Polygon({
+            paths: triangleCoords13,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[12],
+            fillOpacity: 0.35
+          });
+
+          var cell14 = new google.maps.Polygon({
+            paths: triangleCoords14,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[13],
+            fillOpacity: 0.35
+          });
+
+          var cell15 = new google.maps.Polygon({
+            paths: triangleCoords15,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[14],
+            fillOpacity: 0.35
+          });
+
+          var cell16 = new google.maps.Polygon({
+            paths: triangleCoords16,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[15],
+            fillOpacity: 0.35
+          });
+
+          var cell17 = new google.maps.Polygon({
+            paths: triangleCoords17,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[16],
+            fillOpacity: 0.35
+          });
+
+          var cell18 = new google.maps.Polygon({
+            paths: triangleCoords18,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[17],
+            fillOpacity: 0.35
+          });
+
+          var cell19 = new google.maps.Polygon({
+            paths: triangleCoords19,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[18],
+            fillOpacity: 0.35
+          });
+
+          var cell20 = new google.maps.Polygon({
+            paths: triangleCoords20,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[19],
+            fillOpacity: 0.35
+          });
+
+          var cell21 = new google.maps.Polygon({
+            paths: triangleCoords21,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[20],
+            fillOpacity: 0.35
+          });
+
+          var cell22 = new google.maps.Polygon({
+            paths: triangleCoords22,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[21],
+            fillOpacity: 0.35
+          });
+
+          var cell23 = new google.maps.Polygon({
+            paths: triangleCoords23,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[22],
+            fillOpacity: 0.35
+          });
+
+          var cell24 = new google.maps.Polygon({
+            paths: triangleCoords24,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[23],
+            fillOpacity: 0.35
+          });
+
+          var cell25 = new google.maps.Polygon({
+            paths: triangleCoords25,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[24],
+            fillOpacity: 0.35
+          });
+
+          var cell26 = new google.maps.Polygon({
+            paths: triangleCoords26,
+            strokeColor: rojo,
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: colorCell[25],
+            fillOpacity: 0.35
+          });
+
+
+          cell1.setMap(map);
+          cell2.setMap(map);
+          cell3.setMap(map);
+          cell4.setMap(map);
+          cell5.setMap(map);
+          cell6.setMap(map);
+          cell7.setMap(map);
+          cell8.setMap(map);
+          cell9.setMap(map);
+          cell10.setMap(map);
+          cell11.setMap(map);
+          cell12.setMap(map);
+          cell13.setMap(map);
+          cell14.setMap(map);
+          cell15.setMap(map);
+          cell16.setMap(map);
+          cell17.setMap(map);
+          cell18.setMap(map);
+          cell19.setMap(map);
+          cell20.setMap(map);
+          cell21.setMap(map);
+          cell22.setMap(map);
+          cell23.setMap(map);
+          cell24.setMap(map);
+          cell25.setMap(map);
+          cell26.setMap(map);
+  
+          // Add a listener for the click event.
+          cell1.addListener('click', showArrays);
+          cell2.addListener('click', showArrays);
+          cell3.addListener('click', showArrays);
+          cell4.addListener('click', showArrays);
+          cell5.addListener('click', showArrays);
+          cell6.addListener('click', showArrays);
+  
+          infoWindow = new google.maps.InfoWindow;
+        }
+  
+        /** @this {google.maps.Polygon} */
+        function showArrays(event) {
+          // Since this polygon has only one path, we can call getPath() to return the
+          // MVCArray of LatLngs.
+          var vertices = this.getPath();
+  
+          var contentString = '<b>Guayo</b><br>' +
+              'Clicked location: <br>' + event.latLng.lat() + ',' + event.latLng.lng() +
+              '<br>';
+  
+          // Iterate over the vertices.
+          for (var i =0; i < vertices.getLength(); i++) {
+            var xy = vertices.getAt(i);
+            contentString += '<br>' + 'Coordinate ' + i + ':<br>' + xy.lat() + ',' +
+                xy.lng();
+          }
+  
+          // Replace the info window's content and position.
+          infoWindow.setContent(contentString);
+          infoWindow.setPosition(event.latLng);
+  
+          infoWindow.open(map);
+        }
+      </script>
+      <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYSIyuXVIAj9Wm6gl60ge_Skfg_61f-Zg">
+      </script>
+</body>
+</html>

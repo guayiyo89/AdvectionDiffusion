@@ -198,3 +198,11 @@ def temperatura(value):
             value = value + 1
 
     return value
+
+
+"""     aux_diff_PM10 = Diff_cte1 * (((0 - aUPM10_cell[nCell]) / delta_dist) - ((flux_tang_PM10 * tf_lf) / delta_dist)) * aLong[nEdge]
+                aux_diff_PM25 = Diff_cte2 * (((0 - aUPM25_cell[nCell]) / delta_dist) - ((flux_tang_PM25 * tf_lf) / delta_dist)) * aLong[nEdge]
+
+                # FLUJO ADVECTIVO
+                aux_adv_PM10 = (G_f + np.absolute(G_f)) * 0.5 * aUPM10_cell[nCell]
+                aux_adv_PM25 = (G_f + np.absolute(G_f)) * 0.5 * aUPM25_cell[nCell] """

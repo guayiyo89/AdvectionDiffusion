@@ -44,7 +44,7 @@ def visc_din(temp):
 def coeffdif(temp, diam, lamb, nu):
     diam = diam * pow(10,-6) # recibo el diametro
     value = -1.10 * diam / lamb
-    aux = 1 + 2 * lamb / diam * (1.257 + 0.4 * math.exp(value))
+    cC = 1 + lamb / diam * (1.257 + 0.4 * math.exp(value))
     nu = visc_din(temp)
     temp = temp + 273.15
     diff = (2 * kB * temp) / (3 * math.pi * nu * diam / 2)
@@ -52,7 +52,7 @@ def coeffdif(temp, diam, lamb, nu):
 
 def freepath(temp):
     temp = temp + 273.15
-    lamb = (kB * temp) / (math.sqrt(2) * math.pi * pow(dm,2) * P)
+    lamb = (kB * temp) / (4 * math.sqrt(2) * math.pi * pow(dm,2) * P)
     return lamb
 
 def cunningham(diam,temp):

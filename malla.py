@@ -7,10 +7,11 @@ import viento
 import time
 import random
 import pandas as pd
+import interpolacion as intpoly
+import ponderacion as pond
 
 #### FUNCION PARA CAMBIAR COMA POR PUNTO DECIMAL
 f = lambda x : (x.replace(",","."))
-
 
 mesh = om.TriMesh()
 
@@ -119,10 +120,10 @@ for fh in mesh.faces():
         aVty.append(point[1])
     # calculamos el baricentro de la celda
     sumax = aVtx[0] + aVtx[1] + aVtx[2]
-    nCenterx = 0.5 * sumax
+    nCenterx = sumax / 3
     aCenterx.append(nCenterx)
     sumay = aVty[0] + aVty[1] + aVty[2]
-    nCentery = 0.5 * sumay
+    nCentery = sumay / 3
     aCentery.append(nCentery)
     # inicializo los vectores auxiliares para guardar la normal de la celda
     auxNormal_x = []
@@ -143,6 +144,7 @@ for fh in mesh.faces():
         nLx = aVtx[index - 1] - aVtx[index]
         nLy = aVty[index - 1] - aVty[index]
         nLong = np.sqrt(pow(nLx,2) + pow(nLy,2))
+        
         aLong[nEdge] = nLong
         index = index + 1
         # Obtenemos los vectores normales unitarios de cada interface (edge)
@@ -160,6 +162,7 @@ nMax_Cx = np.amax(aCenint_x)
 nMax_Cy = np.amax(aCenint_y)
 nMin_Cx = np.amin(aCenint_x)
 nMin_Cy = np.amin(aCenint_y)
+
 
 
 # obtener los valores de distancia nodo - centro de celda
@@ -227,6 +230,7 @@ for fh in mesh.faces():
         index = index + 1
 
 ####################################################################################################
+
 ####################################################################################################
 ## PARAMETROS
 ####################################################################################################
@@ -235,26 +239,48 @@ for fh in mesh.faces():
 aU_vtc_PM10 = np.zeros((19,26))
 aU_vtc_PM25 = np.zeros((19,26))
 
-# VIENTO (m/h) (corrdenadas x e y) (HACER FUNCION QUE DESCOMPONGA ESTE VALOR)
-velc = 4500
-dirviento = 230.0
-
-# Precipitaciones inicial
-nLluvia = 0.98
-
-# Temperatura Inicial (Promedio)
-nTemp = 11.0
-
-# Arreglo de tiempo
-aTime = np.linspace(0,768,768)
-
 # valores iniciales de concentracion (por ahora un numero random)
 aUPM25_cell = np.array(random.sample(range(12,100), 26)) * pow(10,-9)
 aUPM10_cell = np.array(random.sample(range(30,120), 26)) * pow(10,-9)
+#aUPM25_cell = np.zeros(26)
+#aUPM10_cell = np.zeros(26)
 
-# valores obtenido de las medianas de los datos de PM (para establecer condicion de emision)
-aUPM25_med = np.array(random.sample(range(12,55), 26)) * pow(10,-9)
-aUPM10_med = np.array(random.sample(range(25,70), 26)) * pow(10,-9)
+
+# arreglo de temperaturas
+aTemp = []
+# arreglo de velc viento
+aVviento = []
+# arreglo de dir viento
+aDviento = []
+# arreglo de lluvia
+aLluvia = []
+
+# emision residencial
+srcRes_10 = [3.50, 7.00, 27.98, 2.92, 2.92, 0, 0, 40.58, 13.35, 15.59, 40.71, 15.51, 41.37, 20.56, 13.40, 4.58, 0, 1.93, 4.58, 0, 0, 0, 0, 3.86, 14.62, 1.62]
+srcRes_25 = [3.26, 6.51, 26.05, 2.72, 2.72, 0, 0, 37.79, 12.43, 14.51, 38.11, 14.65, 38.50, 19.14, 12.48, 4.26, 0, 1.80, 4.26, 0, 0, 0, 0, 3.59, 13.61, 1.51]
+
+# carga de emision por Fuentes Moviles en ruta (kg/h)
+fMov_10 = [0.11, 0.40, 0.57, 0.40, 0.40, 0.23, 0.06, 0.80, 0.68, 0.80, 1.71, 1.26, 0.80, 0.80, 0.34, 0, 0, 0, 0, 0, 0.06, 0.06, 0.06, 0.11, 0.80, 0.11]
+fMov_25 = [0.10, 0.34, 0.48, 0.34, 0.34, 0.19, 0.05, 0.67, 0.57, 0.67, 1.44, 1.05, 0.67, 0.67, 0,29, 0, 0, 0, 0, 0, 0.05, 0.05, 0.05, 0.10, 0.67, 0.10]
+
+# carga de emision por Polvo Suspendido en ruta (kg/h)
+pSusp_10 = [1.26, 4.42, 6.31, 4.42, 4.42, 2.53, 0.71, 8.84, 7.58, 8.84, 18.94, 13.89, 8.84, 8.84, 3.79, 0, 0, 0, 0, 0, 0, 0, 0, 1.42, 9.92, 1.42]
+pSusp_25 = [0.18, 0.64, 0.91, 0.64, 0.64, 0.36, 0.10, 1.27, 1.09, 1.27, 2.72, 2.00, 1.27, 1.27, 0,54, 0, 0, 0, 0, 0, 0, 0, 0, 0.20, 1.41, 0.20]
+
+# valores iniciales de concentracion (por ahora un numero random)
+aUPM25_cell = []
+aUPM10_cell = []
+
+i = 0
+for fh in mesh.faces():
+    PM10val = srcRes_10[i]/(aArea[i]*200)
+    PM25val = srcRes_25[i]/(aArea[i]*200)
+    aUPM10_cell.append(PM10val)
+    aUPM25_cell.append(PM25val)
+    i = i + 1
+
+print('PM2.5:', aUPM25_cell)
+print('PM10:', aUPM10_cell)
 
 # Matriz datos Valor/Tiempo
 # PM 10
@@ -262,33 +288,56 @@ aUPM10_timecell = aUPM10_cell
 aUPM10_timevertex = []
 # PM 2.5
 aUPM25_timecell = aUPM25_cell
-print(aUPM25_timecell)
 aUPM25_timevertex = []
 
-# arreglo de temperaturas
-aTemp = [nTemp]
-# arreglo de velc viento
-aVviento = [velc]
-# arreglo de dir viento
-aDviento = []
-# arreglo de lluvia
-aLluvia = []
+####################################################################################################
+## CARGA DE DATOS EN PANDA
+####################################################################################################
 
+
+####################################################################################################
+# MANIPULACION DE DATOS
+
+# the files with meteoriogical data are loaded in interpolacion file
+temperatura = intpoly.resultado('temp')
+lluvia = intpoly.resultado('rain')
+vientoVel = intpoly.resultado('windVel')
+vientoDir = intpoly.resultado('windDir')
+
+largos = [np.size(temperatura),np.size(lluvia),np.size(vientoVel),np.size(vientoDir)]        
+# Ahora defino el arreglo de tiempo
+# tamanp de vector de tiempo
+sizeT = np.size(temperatura) - 1
+# Arreglo de tiempo
+aTime = np.linspace(0,sizeT,np.size(temperatura))
+aTime = aTime.astype(np.int64)
 dt = 1 / len(aTime)
+print(dt)
 
+totFlujA = []
+totFlujD = []
+
+####################################################################################################
 
 ####################################################################################################
 ####################################################################################################
 #ESTO SE DEBE REPETIR EN Todo INTERVALO DE TIEMPO
 ####################################################################################################
+hora = 0
+dia = 1 #Lunes
 
+for t in aTime:
 
-for time in aTime:
     # Calculamos las componentes del viento
-    V_x = viento.calc_Vx(velc, dirviento)
-    V_y = viento.calc_Vy(velc, dirviento)
+    V_x = viento.calc_Vx(vientoVel[t], vientoDir[t])
+    V_y = viento.calc_Vy(vientoVel[t], vientoDir[t])
 
     # CALCULAR COEF DE DIFUSION
+
+    #obtengo la lluvia
+    nLluvia = lluvia[t]
+    # obtengo la temp
+    nTemp = temperatura[t] 
     # viscosidad del aire
     Nu = difs.visc_din(nTemp)
     # distancia de colision del aire
@@ -300,16 +349,28 @@ for time in aTime:
     ##########################################
     # calcular el flujo en los vertices,nodo
     for vh in mesh.vertices():
+        #obtengo la coordenada del nodo
+        nodoCord = mesh.point(vh)
+        corX = nodoCord[0]
+        corY = nodoCord[1]
         nVertex = vh.idx()
         for fh in mesh.vf(vh):
             nCell = fh.idx()
-            valor_u10 = (aUPM10_cell[nCell] / aDist_node_cell[nVertex, nCell]) / aSum_dist_node_cell[nVertex]
-            aU_vtc_PM10[nVertex, nCell] = valor_u10
-            valor_u25 = (aUPM25_cell[nCell] / aDist_node_cell[nVertex, nCell]) / aSum_dist_node_cell[nVertex]
-            aU_vtc_PM25[nVertex, nCell] = valor_u25
+            if corX == np.amax(aCenint_x) or corX == 0 or corY == np.amax(aCenint_y) or corY == 0:
+                aU_vtc_PM10[nVertex, nCell] = 0
+                aU_vtc_PM25[nVertex, nCell] = 0
+            else:
+                valor_u10 = (aUPM10_cell[nCell] / aDist_node_cell[nVertex, nCell]) / aSum_dist_node_cell[nVertex]
+                aU_vtc_PM10[nVertex, nCell] = valor_u10
+                valor_u25 = (aUPM25_cell[nCell] / aDist_node_cell[nVertex, nCell]) / aSum_dist_node_cell[nVertex]
+                aU_vtc_PM25[nVertex, nCell] = valor_u25
     
     aUPM10_timevertex.append(aU_vtc_PM10)
     aUPM25_timevertex.append(aU_vtc_PM25)
+
+    #para guardar los flujos en un arreglo (por ahora)
+    flujosD = []
+    flujosA = []
 
     #print('PM 25', aUPM25_cell)
 
@@ -317,7 +378,6 @@ for time in aTime:
     # Calcular el flujo en cada celda
     for fh in mesh.faces():
         # inicializo la suma
-        nUPM10_cell = 0 # suma para el flujo difusivo
         nCell = fh.idx()
         nQ_Edges = 3 # asumiendo q todos son triangulos
         ##inicializo el arreglo para los puntos de los nodos
@@ -342,6 +402,7 @@ for time in aTime:
         ####################################
         ## CALCULO FLUJOS DE LA INTERFACE
         for i in range(nQ_Edges):
+
             # obtenemos el borde de celda y la celda vecina
             nEdge = int(link_cell_to_edge[nCell, i])
             nCell_v = int(link_cell_to_cell[nCell, i])
@@ -349,7 +410,7 @@ for time in aTime:
             a = aVtc[i - 1]
             b = aVtc[i]
 
-            #flujo tangencial
+            #flujo tangencial (flujo vectores/L)
             flux_tang_PM10 = (aU_vtc_PM10[a, nCell] - aU_vtc_PM10[b, nCell]) / aLong[nEdge]
             flux_tang_PM25 = (aU_vtc_PM25[a, nCell] - aU_vtc_PM25[b, nCell]) / aLong[nEdge]
 
@@ -372,12 +433,12 @@ for time in aTime:
                 tf_lf = (aVtx[i-1] - aVtx[i]) * (x_l - aCenterx[nCell]) * (aVty[i-1] - aVty[i]) * (y_l - aCentery[nCell]) / aLong[nEdge]
                 
                 # FLUJO DIFUSIVO
-                aux_diff_PM10 = Diff_cte1 * (((0 - aUPM10_cell[nCell]) / delta_dist) - ((flux_tang_PM10 * tf_lf) / delta_dist)) * aLong[nEdge]
-                aux_diff_PM25 = Diff_cte2 * (((0 - aUPM25_cell[nCell]) / delta_dist) - ((flux_tang_PM25 * tf_lf) / delta_dist)) * aLong[nEdge]
+                aux_diff_PM10 = 0
+                aux_diff_PM25 = 0
 
                 # FLUJO ADVECTIVO
-                aux_adv_PM10 = (G_f + np.absolute(G_f)) * 0.5 * aUPM10_cell[nCell]
-                aux_adv_PM25 = (G_f + np.absolute(G_f)) * 0.5 * aUPM25_cell[nCell]
+                aux_adv_PM10 = 0
+                aux_adv_PM25 = 0
 
                 # AGREGO AMBOS FLUJOS A LOS ARREGLOS DE SUMATORIA
                 aPM10_adv.append(aux_adv_PM10)
@@ -395,11 +456,11 @@ for time in aTime:
                 y_l = (aCentery[nCell] + aCentery[nCell_v]) / 2
 
                 # t_f punto l_f (segunda parte del flujo tangencial)
-                tf_lf = (aVtx[i-1] - aVtx[i]) * (x_l - aCenterx[nCell]) * (aVty[i-1] - aVty[i]) * (y_l - aCentery[nCell]) / aLong[nEdge]
+                tf_lf = ((aVtx[i-1] - aVtx[i]) * (x_l - aCenterx[nCell]) + (aVty[i-1] - aVty[i]) * (y_l - aCentery[nCell])) / aLong[nEdge]
 
                 # FLUJO DIFUSIVO
-                aux_diff_PM10 = Diff_cte1 * ((((aUPM10_cell[nCell_v] - aUPM10_cell[nCell]) / delta_dist) - ((flux_tang_PM10 * tf_lf) / delta_dist)) * aLong[nEdge]) * aLong[nEdge]
-                aux_diff_PM25 = Diff_cte2 * ((((aUPM25_cell[nCell_v] - aUPM25_cell[nCell]) / delta_dist) - ((flux_tang_PM25 * tf_lf) / delta_dist)) * aLong[nEdge]) * aLong[nEdge]
+                aux_diff_PM10 = Diff_cte1 * ((((aUPM10_cell[nCell_v] - aUPM10_cell[nCell]) / delta_dist) - ((flux_tang_PM10 * tf_lf) / delta_dist))) * aLong[nEdge]
+                aux_diff_PM25 = Diff_cte2 * ((((aUPM25_cell[nCell_v] - aUPM25_cell[nCell]) / delta_dist) - ((flux_tang_PM25 * tf_lf) / delta_dist))) * aLong[nEdge]
 
                 # FLUJO ADVECTIVO
                 aux_adv_PM10 = ((G_f + np.absolute(G_f)) * 0.5 * aUPM10_cell[nCell]) - ((G_f - np.absolute(G_f)) * 0.5 * aUPM10_cell[nCell_v])
@@ -421,43 +482,58 @@ for time in aTime:
         value_adv10 = sum(aPM10_adv)
         value_adv25 = sum(aPM25_adv)
 
-        # Deposicion Seca (vels en m/s lelvarlo a m/h)
-        dseca25 = difs.vdep(nTemp,2.5,aUPM25_cell[nCell],velc) * aUPM25_cell[nCell] * 900
-        dseca10 = difs.vdep(nTemp,10,aUPM10_cell[nCell],velc) * aUPM10_cell[nCell] * 900
+        flujosD.append(value_diff25)
+        flujosA.append(value_adv25)
+
+
+        # Velocidad de Deposicion
+        vW25 = 2 * pow(10,4) * nLluvia * pow(10,-3)
+        vW10 = 4 * pow(10,4) * nLluvia * pow(10,-3)
+
+        area = aArea[nCell]
 
         # Emision
-        cfSrc = difs.pond(nTemp) * 1.1
+        src_PM10 = (srcRes_10[nCell] + fMov_10[nCell] + pSusp_10[nCell] * 0)/(area * 200)
+        src_PM25 = (srcRes_25[nCell] + fMov_25[nCell] + pSusp_25[nCell] * 0)/(area * 200)
 
-        aUPM10_cell[nCell] = PM10 + dt * (value_diff10 - value_adv10) / aArea[nCell] - dt * (nLluvia * pow(10,-3) * aUPM10_cell[nCell]/4 + dseca10) + cfSrc * aUPM10_med[nCell]
-        aUPM25_cell[nCell] = PM25 + dt * (value_diff25 - value_adv25) / aArea[nCell] - dt * (nLluvia * pow(10,-3) * aUPM25_cell[nCell]/4 + dseca25) + cfSrc * aUPM25_med[nCell]
+        aUPM10_cell[nCell] = PM10 + dt * (value_diff10 - value_adv10) / area - dt * (vW10 * PM10) + dt * src_PM10 * pond.calcular(hora, 10)
+        aUPM25_cell[nCell] = PM25 + dt * (value_diff25 - value_adv25) / area - dt * (vW25 * PM25) + dt * src_PM25 * pond.calcular(hora, 2)
+
+        if aUPM10_cell[nCell] < 0:
+            aUPM10_cell[nCell] = 0
+
+        if aUPM25_cell[nCell] < 0:
+            aUPM25_cell[nCell] = 0
+
+        #print('Difusion: ', value_diff10)
+        #print('Adveccion', value_adv10)
+        
         # FIN FLUJO EN TODAS LAS CARAS
+        
     # print('HOLAAA', aUPM10_cell)
+
+    totFlujA.append(flujosA)
+    totFlujD.append(flujosD)
     b = aUPM10_cell
     aUPM10_timecell = np.vstack((aUPM10_timecell,aUPM10_cell))
     aUPM25_timecell = np.vstack((aUPM25_timecell,aUPM25_cell))
 
-    # Actualizo valores de Temperatura, Velocidad y Dir Viento
-    nTemp = markov.temperatura(nTemp)
+    hora = hora + 1
 
-    velc = markov.valor_velc(velc/1000)
-    # lo recnvierto a escala el viento
-    velc = velc * 1000
+    #CICLO DE UN DIA
+    if hora == 24:
+        hora = 0
+        dia = dia + 1
 
-    dirviento = markovdir.direction(dirviento)
-    nLluvia = markovdir.ppm(nLluvia)
-
-    # guardo valores
-    aTemp.append(nTemp)
-    aVviento.append(velc)
-    aDviento.append(dirviento)
-    aLluvia.append(nLluvia)
+    # CICLO DE UNA SEMANA
+    if dia == 8:
+        dia = 1
+    
 
 
 #print('Viento',aVviento)
 
 ##### CONVERIR TOdO A M2!!!
-
-print(dseca25)
 
 dfPM25 = pd.DataFrame(aUPM25_timecell)
 dfPM10 = pd.DataFrame(aUPM10_timecell)
@@ -465,10 +541,12 @@ temperatura = pd.DataFrame(aTemp)
 dfViento = pd.DataFrame(aVviento)
 dfLluvia = pd.DataFrame(aLluvia)
 
-print('PM 25', dfPM25)
+export = dfPM25.to_csv(r'PM25_data.csv', index = None, header=True)
+export = dfPM10.to_csv(r'PM10_data.csv', index = None, header=True)
 
-export = dfPM25.to_csv(r'PM25_test.csv', index = None, header=True)
-export = dfPM10.to_csv(r'PM10_test.csv', index = None, header=True)
-export = temperatura.to_csv(r'temperatura_test.csv', index = None, header=True)
-export = dfLluvia.to_csv(r'lluvia_test.csv', index = None, header=True)
-export = dfViento.to_csv(r'viento_test.csv', index = None, header=True)
+#######################################################################
+# dfAdv10 = pd.DataFrame(totFlujA)
+# dfDif10 = pd.DataFrame(totFlujD)
+
+# export = dfAdv10.to_csv(r'PM25_Adv.csv', index = None, header=True)
+# export = dfDif10.to_csv(r'PM25_Dif.csv', index = None, header=True)
