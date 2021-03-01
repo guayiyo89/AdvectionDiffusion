@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mapa</title>
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+
+
+        // This example creates a simple polygon representing the Bermuda Triangle.
+        // When the user clicks on the polygon an info window opens, showing
+        // information about the polygon's coordinates.
+  
+        var map;
+        var infoWindow;
+  
+        function initMap() {
+            const myLatLng = {lat: -38.738040, lng: -72.603753};
+            const vh0 = {lat: -38.684, lng: -72.6805};
+            const vh1 = {lat: -38.7862, lng: -72.6805};
+            const vh2 = {lat: -38.7862, lng: -72.5193};
+            const vh3 = {lat: -38.684, lng: -72.5193};
+            
+            const vh4 = {lat: -38.684, lng: -72.6452};
+            const vh5 = {lat: -38.684, lng: -72.6019};
+            const vh6 = {lat: -38.684, lng: -72.5543};
+            const vh7 = {lat: -38.7862, lng: -72.6452};
+            const vh8 = {lat: -38.7862, lng: -72.6019};
+            const vh9 = {lat: -38.7862, lng: -72.5543};
+            
+            const vh10 = {lat: -38.7075, lng: -72.6805};
+            const vh11 = {lat: -38.7355, lng: -72.6805};
+            const vh12 = {lat: -38.7584, lng: -72.6805};
+            const vh13 = {lat: -38.7075, lng: -72.5193};
+            const vh14 = {lat: -38.7355, lng: -72.5193};
+            const vh15 = {lat: -38.7584, lng: -72.5193};
+            
+            const vh16 = {lat: -38.7022, lng: -72.6505};
+            const vh17 = {lat: -38.7036, lng: -72.6136};
+            const vh18 = {lat: -38.7011, lng: -72.5788};
+            const vh19 = {lat: -38.7047, lng: -72.5500};
+            const vh20 = {lat: -38.7243, lng: -72.6393};
+            const vh21 = {lat: -38.7293, lng: -72.5983};
+            const vh22 = {lat: -38.7226, lng: -72.5712};
+            const vh23 = {lat: -38.7326, lng: -72.5489};
+            const vh24 = {lat: -38.7553, lng: -72.6567};
+            const vh25 = {lat: -38.7449, lng: -72.6237};
+            const vh26 = {lat: -38.7622, lng: -72.6164};
+            const vh27 = {lat: -38.7544, lng: -72.5802};
+            const vh28 = {lat: -38.7555, lng: -72.5498};
+
+            const vh29 = {lat: -38.684, lng: -72.7043};
+            const vh30 = {lat: -38.8096, lng: -72.7043}; // punto cero
+            const vh31 = {lat: -38.8096, lng: -72.4955};
+            const vh32 = {lat: -38.684, lng: -72.4955};
+
+            const vh33 = {lat: -38.7175, lng: -72.7043};
+            const vh34 = {lat: -38.7461, lng: -72.7043};
+            const vh35 = {lat: -38.7710, lng: -72.7043};
+            const vh36 = {lat: -38.7175, lng: -72.4955};
+            const vh37 = {lat: -38.7461, lng: -72.4955};
+            const vh38 = {lat: -38.7710, lng: -72.4955};
+
+            const vh39 = {lat: -38.8096, lng: -72.6805};
+            const vh40 = {lat: -38.8096, lng: -72.6452};
+            const vh41 = {lat: -38.8096, lng: -72.6019};
+            const vh42 = {lat: -38.8096, lng: -72.5543};
+            const vh43 = {lat: -38.8096, lng: -72.5193};
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 13,
+                center: myLatLng,
+            });
+
+            var pto0 = new google.maps.Marker({
+                position: vh0,
+                map,
+                title: "0",
+            });
+            var pto1 = new google.maps.Marker({
+                position: vh1,
+                map,
+                title: "1",
+            });
+            var pto2 = new google.maps.Marker({
+                position: vh2,
+                map,
+                title: "2",
+            });
+            var pto3 = new google.maps.Marker({
+                position: vh3,
+                map,
+                title: "3",
+            });
+            var pto4 = new google.maps.Marker({
+                position: vh4,
+                map,
+                title: "3",
+            });
+            var pto5 = new google.maps.Marker({
+                position: vh5,
+                map,
+                title: "3",
+            });
+            var pto6 = new google.maps.Marker({
+                position: vh6,
+                map,
+                title: "3",
+            });
+            var pto7 = new google.maps.Marker({
+                position: vh7,
+                map,
+                title: "3",
+            });
+            var pto8 = new google.maps.Marker({
+                position: vh8,
+                map,
+                title: "3",
+            });
+            var pto9 = new google.maps.Marker({
+                position: vh9,
+                map,
+                title: "3",
+            });
+            var pto10 = new google.maps.Marker({
+                position: vh10,
+                map,
+                title: "3",
+            });
+            var pto11 = new google.maps.Marker({
+                position: vh11,
+                map,
+                title: "3",
+            });
+            var pto12 = new google.maps.Marker({
+                position: vh12,
+                map,
+                title: "3",
+            });
+            var pto13 = new google.maps.Marker({
+                position: vh13,
+                map,
+                title: "3",
+            });
+            var pto14 = new google.maps.Marker({
+                position: vh14,
+                map,
+                title: "3",
+            });
+            var pto15 = new google.maps.Marker({
+                position: vh15,
+                map,
+                title: "3",
+            });
+            var pto16 = new google.maps.Marker({
+                position: vh16,
+                map,
+                title: "3",
+            });
+            var pto17 = new google.maps.Marker({
+                position: vh17,
+                map,
+                title: "3",
+            });
+            var pto18 = new google.maps.Marker({
+                position: vh18,
+                map,
+                title: "3",
+            });
+            var pto19 = new google.maps.Marker({
+                position: vh19,
+                map,
+                title: "3",
+            });
+            var pto20 = new google.maps.Marker({
+                position: vh20,
+                map,
+                title: "3",
+            });
+            var pto21 = new google.maps.Marker({
+                position: vh21,
+                map,
+                title: "3",
+            });
+            var pto22 = new google.maps.Marker({
+                position: vh22,
+                map,
+                title: "3",
+            });
+            var pto23 = new google.maps.Marker({
+                position: vh23,
+                map,
+                title: "3",
+            });
+            var pto24 = new google.maps.Marker({
+                position: vh24,
+                map,
+                title: "3",
+            });
+            var pto25 = new google.maps.Marker({
+                position: vh25,
+                map,
+                title: "3",
+            });
+            var pto26 = new google.maps.Marker({
+                position: vh26,
+                map,
+                title: "3",
+            });
+            var pto27 = new google.maps.Marker({
+                position: vh27,
+                map,
+                title: "3",
+            });
+            var pto28 = new google.maps.Marker({
+                position: vh28,
+                map,
+                title: "3",
+            });
+            var pto29 = new google.maps.Marker({
+                position: vh29,
+                map,
+                title: "3",
+            });
+            var pto30 = new google.maps.Marker({
+                position: vh30,
+                map,
+                title: "3",
+            });
+            var pto31 = new google.maps.Marker({
+                position: vh31,
+                map,
+                title: "3",
+            });
+            var pto32 = new google.maps.Marker({
+                position: vh32,
+                map,
+                title: "3",
+            });
+            var pto33 = new google.maps.Marker({
+                position: vh33,
+                map,
+                title: "3",
+            });
+            var pto34 = new google.maps.Marker({
+                position: vh34,
+                map,
+                title: "3",
+            });
+            var pto35 = new google.maps.Marker({
+                position: vh35,
+                map,
+                title: "3",
+            });
+            var pto36 = new google.maps.Marker({
+                position: vh36,
+                map,
+                title: "3",
+            });
+            var pto37 = new google.maps.Marker({
+                position: vh37,
+                map,
+                title: "3",
+            });
+            var pto38 = new google.maps.Marker({
+                position: vh38,
+                map,
+                title: "3",
+            });
+            var pto39 = new google.maps.Marker({
+                position: vh39,
+                map,
+                title: "3",
+            });
+            var pto40 = new google.maps.Marker({
+                position: vh40,
+                map,
+                title: "3",
+            });
+            var pto40 = new google.maps.Marker({
+                position: vh41,
+                map,
+                title: "3",
+            });
+            var pto40 = new google.maps.Marker({
+                position: vh42,
+                map,
+                title: "3",
+            });
+            var pto40 = new google.maps.Marker({
+                position: vh43,
+                map,
+                title: "3",
+            });
+        }
+      </script>
+      <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYSIyuXVIAj9Wm6gl60ge_Skfg_61f-Zg&callback=initMap">
+      </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 # data PM2.5
-data = pd.read_csv("PM25_test.csv")
+data = pd.read_csv("PM_Estimado.csv")
 result = data.values.tolist()
 datanew = np.asarray(result)
 
@@ -20,10 +20,10 @@ for a in result:
 m = np.size(dataPM25)
 
 dataPM25 = np.array(dataPM25)
-dataPM25 = dataPM25 * pow(10,9)
+# dataPM25 = dataPM25 * pow(10,9)
 
 # data PM10
-data = pd.read_csv("PM10_test.csv")
+data = pd.read_csv("PM_exacto.csv")
 result = data.values.tolist()
 datanew = np.asarray(result)
 
@@ -63,7 +63,6 @@ for a in result:
 
 
 dataPM10 = np.array(dataPM10)
-dataPM10 = dataPM10 * pow(10,9)
 
 print(len(dataTmp))
 print(len(dataViento))

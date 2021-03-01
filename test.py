@@ -1,66 +1,62 @@
-<<<<<<< HEAD
 import numpy as np
-import openmesh as om
-import random
-n = 4
-m = 3
-#a = n*m
-matriz = []
 
-for i in range(n):
-    matriz.append([])
-    for j in range(m):
-        matriz[i].append(random.randint(0, 100))
+# USO DE NUMPY
+valor = np.cos(np.pi)
 
-dime = type(-1.0)
-
-arrayt = [2.54,3.12,4.445,5,6,2,3,1]
-valorsillo = sum(arrayt)
-arrayt = np.array(arrayt) * pow(10,-7)
-
-fMovil_10 = [11.06, 2,3,4]
+print('El valor de cos de pi:', valor)
 
 
-def moreless(val):
-    if val == 0:
-        return('It is equal to zaro')
-    if val > 0:
-        return('It is more than zero')
-    if val < 0:
-        return('It is less than zero')
+def miFuncion(num):
+    doble = num * 2
+    return doble
 
-valor = moreless(5)
-=======
-import numpy as np
-import openmesh as om
-import random
-n = 4
-m = 3
-#a = n*m
-matriz = []
+def multiplicar(num1, num2):
+    resultado = num1 * num2
+    return resultado
 
-for i in range(n):
-    matriz.append([])
-    for j in range(m):
-        matriz[i].append(random.randint(0, 100))
+# DEFINIR UN ARRAY
+arreglo = [] # esta vacio!
 
-dime = type(-1.0)
+# UN CICLO WHILE
+i = 1
+while(i < 5):
+    value = miFuncion(i)
+    i = i + 1
+    arreglo.append(value) # relleno el arreglo, con cada nuevo elemento al final de el.
+    #print(arreglo)
 
-arrayt = [2.54,3.12,4.445,5,6,2,3,1]
-valorsillo = sum(arrayt)
-arrayt = np.array(arrayt) * pow(10,-7)
+#print('FINAL:', arreglo)
+#print('El largo del arreglo es: ', len(arreglo))
 
-fMovil_10 = [11.06, 2,3,4]
+""" fuunction Mifuncion(num){
+    doble = num * 2;
+} """ # FUNCION EN MATLAB
+
+#def multiplicar(num1, num2)
+
+# UN CICLO FOR
+
+# FOR para recorrer un arreglo
+for elemento in arreglo:
+    result = multiplicar(elemento, 3)
+    #print('EL valor es:', result)
+
+# FOR UTILIZANDO UN RANGO
+# for i in range(10):
+    # print(i)
+
+# range(partida, final, salto)
+for valor in range(1, 11, 3):
+    result = valor * 0.5
+    # print(result)
+
+# Definir un arreglo usando linspace
+aValues = np.linspace(0, 10, 101)
 
 
-def moreless(val):
-    if val == 0:
-        return('It is equal to zaro')
-    if val > 0:
-        return('It is more than zero')
-    if val < 0:
-        return('It is less than zero')
+print('aValues:', aValues)
 
-valor = moreless(5)
->>>>>>> 82192ae73ea8efbf3b6b90fd7171f97559717865
-print(valor)
+primero = aValues[0]
+ultimo = aValues[-2]
+print('el primero es:', primero)
+print('el ultimo es:', ultimo)

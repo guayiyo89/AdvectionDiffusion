@@ -69,6 +69,15 @@
             center: {lat: -38.738040, lng: -72.603753},
             mapTypeId: 'terrain'
           });
+
+          var marker = new google.maps.Marker({
+              position: {lat: -38.738040, lng: -72.603753},
+              map: map,
+              title: 'Hello World!',
+              icon: 'pin.png',
+              animation: google.maps.Animation.BOUNCE,
+              draggable: true
+          });
   
           // Define the LatLng coordinates for the polygon.
           var triangleCoords1 = [
@@ -467,6 +476,15 @@
             strokeWeight: 3,
             fillColor: colorCell[25],
             fillOpacity: 0.35
+          });
+
+          var marker = new google.maps.Marker({
+              position: {lat: -38.738040, lng: -72.603753},
+              map: map,
+              title: 'Hello World!',
+              icon: 'pin.png',
+              animation: google.maps.Animation.BOUNCE,
+              draggable: true
           });
 
 
