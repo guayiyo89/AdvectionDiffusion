@@ -50,9 +50,9 @@ def coeffdif(temp, diam, lamb, nu):
     diff = (2 * kB * temp) / (3 * math.pi * nu * diam / 2)
     return diff
 
-def freepath(temp):
+def freepath(temp, pres):
     temp = temp + 273.15
-    lamb = (kB * temp) / (4 * math.sqrt(2) * math.pi * pow(dm,2) * P)
+    lamb = (kB * temp) / (4 * math.sqrt(2) * math.pi * pow(dm,2) * pres * 100)
     return lamb
 
 def cunningham(diam,temp):

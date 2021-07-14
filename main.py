@@ -2,139 +2,20 @@ import numpy as np
 import openmesh as om
 import pandas as pd
 import exactas as fnc
+import markov
+import markovdir
+import diffusive as difs
+import viento
+import time
+import random
+import interpolacion as intpoly
+import ponderacion as pond
+import loadfiles as ld
 
 #### Defino el tipo de Malla
 mesh = om.TriMesh() # TriMesh es una funcion de OpenMesh (om)
 
-
-# vertices de malla
-vh0 = mesh.add_vertex([-3.8602, 5.0, 0])
-vh1 = mesh.add_vertex([-3.8602, -3.1369, 0])
-vh2 = mesh.add_vertex([3.8602, -3.1369, 0])
-vh3 = mesh.add_vertex([3.8602, 5.0, 0])
-
-vh4 = mesh.add_vertex([-2.1695, 5.0, 0])
-vh5 = mesh.add_vertex([-0.0958, 5.0, 0])
-vh6 = mesh.add_vertex([2.1839, 5.0, 0])
-vh7 = mesh.add_vertex([-2.1695, -3.1369, 0])
-vh8 = mesh.add_vertex([-0.0958, -3.1369, 0])
-vh9 = mesh.add_vertex([2.1839, -3.1369, 0])
-
-vh10 = mesh.add_vertex([-3.8602, 3.1290, 0])
-vh11 = mesh.add_vertex([-3.8602, 0.8997, 0])
-vh12 = mesh.add_vertex([-3.8602, -0.9236, 0])
-vh13 = mesh.add_vertex([3.8602, 3.1290, 0])
-vh14 = mesh.add_vertex([3.8602, 0.8997, 0])
-vh15 = mesh.add_vertex([3.8602, -0.9236, 0])
-
-vh16 = mesh.add_vertex([-2.4234, 3.551, 0])
-vh17 = mesh.add_vertex([-0.6561, 3.4395, 0])
-vh18 = mesh.add_vertex([1.0105, 3.6385, 0])
-vh19 = mesh.add_vertex([2.3994, 3.3519, 0])
-
-vh20 = mesh.add_vertex([-1.887, 1.7914, 0])
-vh21 = mesh.add_vertex([0.0766, 1.3933, 0])
-vh22 = mesh.add_vertex([1.3745, 1.9268, 0])
-vh23 = mesh.add_vertex([2.4425, 1.1306, 0])
-
-vh24 = mesh.add_vertex([-2.7203, -0.6768, 0])
-vh25 = mesh.add_vertex([-1.1398, 0.1513, 0])
-vh26 = mesh.add_vertex([-0.7902, -1.2261, 0])
-vh27 = mesh.add_vertex([0.9435, -0.6051, 0])
-vh28 = mesh.add_vertex([2.3994, -0.6927, 0])
-
-vh29 = mesh.add_vertex([-5.0, 5.0, 0])
-vh30 = mesh.add_vertex([-5.0, -5.0, 0])
-vh31 = mesh.add_vertex([5.0, -5.0, 0])
-vh32 = mesh.add_vertex([5.0, 5.0, 0])
-
-vh33 = mesh.add_vertex([-5.0, 2.3328, 0])
-vh34 = mesh.add_vertex([-5.0, 0.0557, 0])
-vh35 = mesh.add_vertex([-5.0, -1.9268, 0])
-vh36 = mesh.add_vertex([5.0, 2.3328, 0])
-vh37 = mesh.add_vertex([5.0, 0.0557, 0])
-vh38 = mesh.add_vertex([5.0, -1.9268, 0])
-
-vh39 = mesh.add_vertex([-3.8602, -5.0, 0])
-vh40 = mesh.add_vertex([-2.1695, -5.0, 0])
-vh41 = mesh.add_vertex([-0.0958, -5.0, 0])
-vh42 = mesh.add_vertex([2.1839, -5.0, 0])
-vh43 = mesh.add_vertex([3.8602, -5.0, 0])
-
-#Celdas
-fh0 = mesh.add_face(vh0, vh10, vh16)
-fh1 = mesh.add_face(vh0, vh16, vh4)
-fh2 = mesh.add_face(vh4, vh16, vh17)
-fh3 = mesh.add_face(vh4, vh17, vh5)
-fh4 = mesh.add_face(vh5, vh17, vh18)
-fh5 = mesh.add_face(vh5, vh18, vh6)
-fh6 = mesh.add_face(vh6, vh18, vh19)
-fh7 = mesh.add_face(vh6, vh19, vh3)
-fh8 = mesh.add_face(vh3, vh19, vh13)
-
-fh9 = mesh.add_face(vh16, vh10, vh20)
-fh10 = mesh.add_face(vh17, vh16, vh20)
-fh11 = mesh.add_face(vh17, vh20, vh21)
-fh12 = mesh.add_face(vh17, vh21, vh18)
-fh13 = mesh.add_face(vh18, vh21, vh22)
-fh14 = mesh.add_face(vh18, vh22, vh19)
-fh15 = mesh.add_face(vh23, vh19, vh22)
-fh16 = mesh.add_face(vh13, vh19, vh23)
-fh17 = mesh.add_face(vh14, vh13, vh23)
-
-fh18 = mesh.add_face(vh20, vh10, vh11)
-fh19 = mesh.add_face(vh20, vh11, vh24)
-fh20 = mesh.add_face(vh20, vh24, vh25)
-fh21 = mesh.add_face(vh20, vh25, vh21)
-fh22 = mesh.add_face(vh21, vh25, vh27)
-fh23 = mesh.add_face(vh27, vh22, vh21)
-fh24 = mesh.add_face(vh22, vh27, vh23)
-fh25 = mesh.add_face(vh23, vh27, vh28)
-fh26 = mesh.add_face(vh23, vh28, vh14)
-fh27 = mesh.add_face(vh14, vh28, vh15)
-
-fh28 = mesh.add_face(vh11, vh12, vh24)
-fh29 = mesh.add_face(vh26, vh25, vh24)
-fh30 = mesh.add_face(vh27, vh25, vh26)
-
-fh31 = mesh.add_face(vh12, vh1, vh24)
-fh32 = mesh.add_face(vh24, vh1, vh7)
-fh33 = mesh.add_face(vh26, vh24, vh7)
-fh34 = mesh.add_face(vh26, vh7, vh8)
-fh35 = mesh.add_face(vh26, vh8, vh27)
-fh36 = mesh.add_face(vh9, vh27, vh8)
-fh37 = mesh.add_face(vh27, vh9, vh28)
-fh38 = mesh.add_face(vh28, vh9, vh2)
-fh39 = mesh.add_face(vh15, vh28, vh2)
-
-fh40 = mesh.add_face(vh0, vh29, vh10)
-fh41 = mesh.add_face(vh29, vh33, vh10)
-fh42 = mesh.add_face(vh33, vh11, vh10)
-fh43 = mesh.add_face(vh33, vh34, vh11)
-fh44 = mesh.add_face(vh11, vh34, vh12)
-fh45 = mesh.add_face(vh34, vh35, vh12)
-fh46 = mesh.add_face(vh12, vh35, vh1)
-fh47 = mesh.add_face(vh35, vh30, vh1)
-fh48 = mesh.add_face(vh30, vh39, vh1)
-
-fh49 = mesh.add_face(vh39, vh40, vh1)
-fh50 = mesh.add_face(vh40, vh7, vh1)
-fh51 = mesh.add_face(vh40, vh8, vh7)
-fh52 = mesh.add_face(vh40, vh41, vh8)
-fh53 = mesh.add_face(vh41, vh42, vh8)
-fh54 = mesh.add_face(vh42, vh9, vh8)
-fh55 = mesh.add_face(vh42, vh2, vh9)
-fh56 = mesh.add_face(vh42, vh43, vh2)
-
-fh57 = mesh.add_face(vh43, vh31, vh2)
-fh58 = mesh.add_face(vh31, vh38, vh2)
-fh59 = mesh.add_face(vh38, vh15, vh2)
-fh60 = mesh.add_face(vh38, vh37, vh15)
-fh61 = mesh.add_face(vh15, vh37, vh14)
-fh62 = mesh.add_face(vh37, vh36, vh14)
-fh63 = mesh.add_face(vh36, vh13, vh14)
-fh64 = mesh.add_face(vh36, vh32, vh13)
-fh65 = mesh.add_face(vh32, vh3, vh13)
+mesh = om.read_trimesh('meshTco2.off')
 
 ########################################################################################
 #Contar vertices, faces, edges
@@ -425,8 +306,7 @@ for fh in mesh.faces():
                                 ladoPar[nCell] = nEdge_p
     
     
-        
-print(celdaPar)       
+               
   
 ############################################################################################################
 ############################################################################################################
@@ -435,20 +315,20 @@ print(celdaPar)
 
 aU_vtc_PM = np.zeros(totVx)                                 # Concentracion de los vertices
 
-sigma = 2
+sigma = 3
 xc = -2
 yc = -4
-x0 = 2.5
-y0 = 2.5
-x1 = 0
-y1 = 0
-tau0 = 7.0
-tau1 = 0.001
+x0 = aBarX[29]
+y0 = aBarY[29]
+x1 = aBarX[22]
+y1 = aBarY[22]
+tau0 = 20
+tau1 = 13
 a0 = 1
 cx = 1.5
 cy = 1.5
 lamb = 0.1
-s = 1.0
+s = 1
 epsilon = 0
 alpha = 0.4
 T0 = 0.2
@@ -460,9 +340,6 @@ tEnd = 3.0
 
 # Concentracion inicial (celdas)
 uPM = []
-for fh in mesh.faces():
-    initPM = fnc.exacta(aBarX[nCell], aBarY[nCell], 0, T0)
-    uPM.append(initPM)
 
 aUPM_timecell = uPM                                         # historico PM celdas
 aUPM_timevertex = []                                        # historico PM vertices
@@ -474,9 +351,78 @@ aJ_B_10 = np.zeros(totEd)
 aJ_B_25 = np.zeros(totEd)
 
 ########################################################################################################
+# CARGA DE DATOS
+
+# the files with meteoriogical data are loaded in interpolacion file
+temperatura_LE = intpoly.resultado('LE','temp')
+lluvia_LE = intpoly.resultado('LE','rain')
+vientoVel_LE = intpoly.resultado('LE','windVel')
+vientoDir_LE = intpoly.resultado('LE','windDir')
+presion_LE = intpoly.resultado('LE', 'presion')
+
+temperatura_PLC = intpoly.resultado('PLC','temp')
+lluvia_PLC = intpoly.resultado('PLC','rain')
+vientoVel_PLC = intpoly.resultado('PLC','windVel')
+vientoDir_PLC = intpoly.resultado('PLC','windDir')
+presion_PLC = intpoly.resultado('PLC', 'presion')
+
+temperatura_NL = intpoly.resultado('NL','temp')
+lluvia_NL = intpoly.resultado('NL','rain')
+vientoVel_NL = intpoly.resultado('NL','windVel')
+vientoDir_NL = intpoly.resultado('NL','windDir')
+presion_NL = intpoly.resultado('NL', 'presion')
+
+asignaciones = ld.appoint()
+
+# funciones de llamado
+def temperatura(cod, i):
+    if cod == 'LE':
+        return temperatura_LE[i]
+    if cod == 'NL':
+        return temperatura_NL[i]
+    if cod == 'PLC':
+        return temperatura_PLC[i]
+
+def lluvia(cod, i):
+    if cod == 'LE':
+        return lluvia_LE[i]
+    if cod == 'NL':
+        return lluvia_NL[i]
+    if cod == 'PLC':
+        return lluvia_PLC[i]
+
+def dirViento(cod, i):
+    if cod == 'LE':
+        return vientoDir_LE[i]
+    if cod == 'NL':
+        return vientoDir_NL[i]
+    if cod == 'PLC':
+        return vientoDir_PLC[i]
+
+def velViento(cod, i):
+    if cod == 'LE':
+        return vientoVel_LE[i]
+    if cod == 'NL':
+        return vientoVel_NL[i]
+    if cod == 'PLC':
+        return vientoVel_PLC[i]
+
+def pressure(cod, i):
+    if cod == 'LE':
+        return presion_LE[i]
+    if cod == 'NL':
+        return presion_NL[i]
+    if cod == 'PLC':
+        return presion_PLC[i]
+
+
+# defino el numero de iteraciones
+# sizeT = np.size(temperatura) - 1
+
+########################################################################################################
 # MANIPULACION DE DATOS
 
-CFL = 0.5
+CFL = 0.25
 #velc maxima
 aVelcX = []
 aVelcY = []
@@ -485,13 +431,20 @@ razon1 = []
 aDT = []                            # de aqui escojo el dt
 for fh in mesh.faces():
     nCell = fh.idx()
-    vX = fnc.vx(aBarX[nCell],aBarY[nCell],0,T0)
-    vY = fnc.vy(aBarX[nCell],aBarY[nCell],0,T0)
+    nCod = asignaciones[nCell] 
+
+    nVelWind = velViento(nCod, 0)
+    nDirWind = dirViento(nCod, 0)
+    vX = viento.calc_Vx(nVelWind, nDirWind)
+    vY = viento.calc_Vy(nVelWind, nDirWind)
 
     valR = (np.sqrt(vX**2 + vY**2) + coeff_D) / aArea[nCell]
     razon1.append(valR)
     aVelcX.append(vX)
     aVelcY.append(vY)
+    # Concentracion Inicial
+    initPM = fnc.exacta(aBarX[nCell], aBarY[nCell], 0, T0, vX, vY, x0, x1, y0, y1, tau0, tau1, 0)
+    uPM.append(initPM)
 
 for fh in mesh.faces():
     nCell = fh.idx()
@@ -502,7 +455,8 @@ dt = CFL * min(aDT)                 # dt inicial
 
 
 #arreglo de Tiempo
-aTime = np.linspace(0,tEnd, 1200)
+aTime = np.linspace(0,714,715)
+
 aTime = aTime.astype(np.int64)
 # dt = 1 / len(aTime)
 
@@ -524,17 +478,15 @@ for val in aTime:
     razon1 = []
     aDT = []
 
+    # obtengo los limites para la interpolacion
+    t1 = int(t)
+    t2 = t1 + 1
+
     ########################################################################################################
     # Calculo de los flujos vertice - nodo
     for vh in mesh.vertices():
         nVertex = vh.idx()
         aVxy = mesh.point(vh)
-        #calculo el viento
-        Vx = fnc.vx(aVxy[0],aVxy[1],t,T0)
-        Vy = fnc.vy(aVxy[0],aVxy[1],t,T0)
-
-        valR = (np.sqrt(Vx**2 + Vy**2) + coeff_D) / aArea[nCell]
-        razon1.append(valR)
 
         aux_pm = []                             # auxiliar para sumar las concntraciones
         for fh in mesh.vf(vh):
@@ -551,6 +503,25 @@ for val in aTime:
     for fh in mesh.faces():
         nCell = fh.idx()
         nQ_Edges = 3                            # todos son triangulos
+        nCod = asignaciones[nCell]              # Si corrrsponde dato NL, PLC o LE
+
+        # obtengo datos meteorologicos
+        nLluvia = intpoly.valEstimado(lluvia(nCod, t1), lluvia(nCod, t2), t, t1)
+        nTemp = intpoly.valEstimado(temperatura(nCod, t1), temperatura(nCod, t2), t, t1)
+        nPresion = intpoly.valEstimado(pressure(nCod, t1), pressure(nCod, t2), t, t1)
+        nVelWind = intpoly.valEstimado(velViento(nCod, t1), velViento(nCod, t2), t, t1)
+        nDirWind = intpoly.valEstimado(dirViento(nCod, t1), dirViento(nCod, t2), t, t1)
+
+        # viscosidad del aire
+        Nu = difs.visc_din(nTemp)
+        # distancia de colision del aire
+        Lmb = difs.freepath(nTemp, nPresion)
+        # Coef de difusion de PM 10 y 2.5 se lleva a horas
+        Diff_cte1 = 2 * difs.coeffdif(nTemp,10.0,Lmb,Nu) * 3600
+
+        #calculo el viento
+        Vx = viento.calc_Vx(nVelWind, nDirWind)
+        Vy = viento.calc_Vy(nVelWind, nDirWind)
 
         # almaceno la info de los vertices
         aVtx = []                               # x
@@ -601,9 +572,11 @@ for val in aTime:
                 # t_f punto l_f (Flujo tangencial) Info GEOMETRICA
                 tf_lf = (aVtx[i] - aVtx[i-1]) * (x_l - aBarX[nCell]) * (aVty[i] - aVty[i-1]) * (y_l - aBarY[nCell]) / aLongLados[nEdge]
 
-                # valores flujos
-                diff_f = coeff_D * (((fnc.exacta(aBarX[nCell],aBarY[nCell],t,T0) - uPM[nCell]) / delta_dist) - (flux_tang_PM * tf_lf / delta_dist)) * aLongLados[nEdge]
+                # Flujo Difusivo
+                diff_f = 0
                 # diff_f = coeff_D * ((fnc.exacta(aBarX[nCell],aBarY[nCell],t,T0) - uPM[nCell]) / delta_dist) * aLongLados[nEdge]
+
+                # Flujo Advectivo
                 adv_f = 0                                                                   # no influye
                 
                 aPM_diff.append(diff_f)
@@ -625,11 +598,11 @@ for val in aTime:
                 tf_lf = (aVtx[i] - aVtx[i-1]) * (x_l - aBarX[nCell]) * (aVty[i] - aVty[i-1]) * (y_l - aBarY[nCell]) / aLongLados[nEdge]
 
                 # Flujo Difusivo
-                diff_f = coeff_D * (((uPM[nCell_v] - uPM[nCell]) / delta_dist) - (flux_tang_PM * tf_lf / delta_dist)) * aLongLados[nEdge]
+                diff_f = Diff_cte1 * (((uPM[nCell_v] - uPM[nCell]) / delta_dist) - (flux_tang_PM * tf_lf / delta_dist)) * aLongLados[nEdge]
                 # diff_f = coeff_D * ((uPM[nCell_v] - uPM[nCell]) / delta_dist) * aLongLados[nEdge]
 
                 #Flujo Advectivo
-                adv_f = ((G_f + np.abs(G_f))/2 * uPM[nCell]) - ((G_f - np.abs(G_f))/2 * uPM[nCell_v])
+                adv_f = ((G_f + np.abs(G_f))/2 * uPM[nCell]) + ((G_f - np.abs(G_f))/2 * uPM[nCell_v])
 
                 aPM_diff.append(diff_f)
                 
@@ -640,36 +613,32 @@ for val in aTime:
         PM1 = uPM[nCell]                                          # valor anterior
         val_diff = sum(aPM_diff)                                  # difusion
         val_adv = sum(aPM_adv)                                    # adveccion
-        srcPM = fnc.source(aBarX[nCell], aBarY[nCell], t, T0)     # emision
+        kappa = 4 * pow(10,4) * nLluvia * pow(10,-3)              # depo
+        srcPM = fnc.source(aBarX[nCell], aBarY[nCell], t, T0, Diff_cte1, vX, vY, x0, x1, y0, y1, tau0, tau1, kappa)     # emision
+        #srcPM = 0
 
         #print('PM1',PM1)
 
         # Delta de Dirac
         d0x = fnc.delta(aBarX[nCell] - x0)
         d0y = fnc.delta(aBarY[nCell] - y0)
-        d0t = fnc.delta(t - tau0)
+        d0t = fnc.delta((hora - tau0)*1)
         d1x = fnc.delta(aBarX[nCell] - x1)
         d1y = fnc.delta(aBarY[nCell] - y1)
-        d1t = fnc.delta(t - tau1)
+        d1t = fnc.delta((hora - tau1)*1)
 
-        area = aArea[nCell]
+        area = aArea[nCell]       
 
         # Concentracion de la celda
-        PM2 = PM1 + dt * ((val_diff - val_adv) / area + srcPM) + dt * s *((d0x * d0y * d0t) + (d1x * d1y * d1t))
+        PM2 = PM1 + dt * (( (val_diff - val_adv) / area) + srcPM) + dt * s *((d0x * d0y * d0t) + (d1x * d1y * d1t)) - dt * kappa * PM1
+        #PM2 = PM1 + dt * s *((d0x * d0y * d0t) + (d1x * d1y * d1t)) 
         uPM[nCell] = PM2
-        valExacta = fnc.exacta(aBarX[nCell], aBarY[nCell], t, T0)
+        valExacta = fnc.exacta(aBarX[nCell], aBarY[nCell], t, T0, vX, vY, x0, x1, y0, y1, tau0, tau1, hora)
         aExacta.append(valExacta)
         
-    # recalculo el dt
-    for fh in mesh.faces():
-        nCell = fh.idx()
-        val = aArea[nCell] / max(razon1)
-        aDT.append(val)
-
-    dt = CFL * min(aDT)                 # dt para la prox iteracion
     
     #print('DT', dt, 'vX y Vy: ', Vx, Vy)
-    
+
     ### paso por celda
     aUPM_timecell = np.vstack((aUPM_timecell, uPM))
     aUPM_timeedge.append(u_Edges)
@@ -677,10 +646,31 @@ for val in aTime:
 
     t = t + dt
 
-    hora = hora + 1
+    hora = hora + dt
+
+    # recalculo el dt
+    for fh in mesh.faces():
+        nCell = fh.idx()
+        nCod = asignaciones[nCell] 
+        
+        nVelWind = intpoly.valEstimado(velViento(nCod, t1), velViento(nCod, t2), t, t1)
+        nDirWind = intpoly.valEstimado(dirViento(nCod, t1), dirViento(nCod, t2), t, t1)
+
+        valR = (np.sqrt(vX**2 + vY**2) + coeff_D) / aArea[nCell]
+        razon1.append(valR)
+        aVelcX.append(vX)
+        aVelcY.append(vY)
+
+    for fh in mesh.faces():
+        nCell = fh.idx()
+        val = aArea[nCell] / max(razon1)
+        aDT.append(val)
+
+    dt = CFL * min(aDT)                 # dt para la prox iteracion
+    dt = 0.33
 
     #CICLO DE UN DIA
-    if hora == 24:
+    if hora >= 24:
         hora = 0
         dia = dia + 1
 
@@ -694,11 +684,16 @@ for val in aTime:
 #####################################################################################################################################
 # Exportar Datos
 dfPM10 = pd.DataFrame(aUPM_timecell)
-export = dfPM10.to_csv(r'PM_estimado.csv', index = None, header=True)
+export = dfPM10.to_csv(r'visual/PM_temuco.csv', index = None, header=True)
 
 dfExac = pd.DataFrame(hExacta)
-export = dfExac.to_csv(r'PM_exacto.csv', index = None, header=True)
+export = dfExac.to_csv(r'visual/PM_temuco_ex.csv', index = None, header=True)
 
-    
+
+centers = np.array([aBarX,aBarY])
+dfCenters = pd.DataFrame(centers)
+print(t)
+#export = dfCenters.to_csv(r'centroides.csv', index = None, header=True)
+#export2 = dfCenters.to_excel("centroides.xlsx", sheet_name = 'Sheet_1')       
 
 print('Listo!')
